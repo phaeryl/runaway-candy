@@ -33,6 +33,10 @@ function preload() {
           frameHeight: 48
       }
   );
+  // Ajout d'un event listener sur la touche A
+  this.input.keyboard.on('keydown_A', function (event) {
+    console.log('Hello from the A Key!');
+  });
 
 }
 
