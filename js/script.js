@@ -1,22 +1,28 @@
 var config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 600 },
-            debug: false
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: {
+        y: 600
+      },
+      debug: false
     }
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
+  }
 };
 
 var game = new Phaser.Game(config);
+var isPressed = false;
+var isRed = true;
+var isBlue = false;
+var isYellow = false;
 
 function preload() {
 
@@ -28,14 +34,33 @@ function preload() {
 
   // chargement du sprite du personnage
   this.load.spritesheet('dude',
-      'assets/dude.png', {
-          frameWidth: 32,
-          frameHeight: 48
-      }
+    'assets/dude.png', {
+      frameWidth: 32,
+      frameHeight: 48
+    }
   );
-  // Ajout d'un event listener sur la touche A
+  // Ajout d'un event listener sur la touche A  
   this.input.keyboard.on('keydown_A', function (event) {
-    console.log('Hello from the A Key!');
+    isPressed = true;
+    if (isPressed && isRed == true && isBlue == false && isYellow == false) {
+      isRed = false;
+      isBlue = true;
+      console.log('Couleur bleue activée !')
+      isPressed = false;
+    }
+    if (isPressed && isRed == false && isBlue == true && isYellow == false) {
+      isBlue = false;
+      isYellow = true;
+      console.log('Couleur jaune activée !');
+      isPressed = false;
+    }
+    if (isPressed && isRed == false && isBlue == false && isYellow == true) {
+      isYellow = false;
+      isRed = true;
+      console.log('Couleur rouge activée !');
+      isPressed = false;
+    }
+
   });
 
 }
@@ -80,41 +105,50 @@ function create() {
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Ajout du personnage
-player = this.physics.add.sprite(100, 450, 'dude');
+  // Ajout du personnage
+  player = this.physics.add.sprite(100, 450, 'dude');
 
-// Gestion du rebondissement du personnage
-player.setBounce(0.1);
+  // Gestion du rebondissement du personnage
+  player.setBounce(0.1);
 
-//
-player.setCollideWorldBounds(true);
+  //
+  player.setCollideWorldBounds(true);
 
-// declaration de la collision entre player, platforms
-this.physics.add.collider(player, platforms);
+  // declaration de la collision entre player, platforms
+  this.physics.add.collider(player, platforms);
 
-//
-cursors = this.input.keyboard.createCursorKeys();
+  //
+  cursors = this.input.keyboard.createCursorKeys();
 
-// assignation des frames par rapport aux mouvement + assignation touche
-this.anims.create({
-  key: 'left',
-  frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-  frameRate: 10,
-  repeat: -1
-});
+  // assignation des frames par rapport aux mouvement + assignation touche
+  this.anims.create({
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('dude', {
+      start: 0,
+      end: 3
+    }),
+    frameRate: 10,
+    repeat: -1
+  });
 
-this.anims.create({
-  key: 'turn',
-  frames: [ { key: 'dude', frame: 4 } ],
-  frameRate: 20
-});
+  this.anims.create({
+    key: 'turn',
+    frames: [{
+      key: 'dude',
+      frame: 4
+    }],
+    frameRate: 20
+  });
 
-this.anims.create({
-  key: 'right',
-  frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-  frameRate: 10,
-  repeat: -1
-});
+  this.anims.create({
+    key: 'right',
+    frames: this.anims.generateFrameNumbers('dude', {
+      start: 5,
+      end: 8
+    }),
+    frameRate: 10,
+    repeat: -1
+  });
 
 }
 
@@ -125,28 +159,22 @@ function update() {
 
   // reglage de la vitesse du personnage
 
-  if (cursors.left.isDown)
-  {
-      player.setVelocityX(-280);
+  if (cursors.left.isDown) {
+    player.setVelocityX(-280);
 
-      player.anims.play('left', true);
-  }
-  else if (cursors.right.isDown)
-  {
-      player.setVelocityX(280);
+    player.anims.play('left', true);
+  } else if (cursors.right.isDown) {
+    player.setVelocityX(280);
 
-      player.anims.play('right', true);
-  }
-  else
-  {
-      player.setVelocityX(0);
+    player.anims.play('right', true);
+  } else {
+    player.setVelocityX(0);
 
-      player.anims.play('turn');
+    player.anims.play('turn');
   }
 
-  if (cursors.up.isDown && player.body.touching.down)
-  {
-      player.setVelocityY(-360);
+  if (cursors.up.isDown && player.body.touching.down) {
+    player.setVelocityY(-360);
   }
 
 }
